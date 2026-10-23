@@ -1,0 +1,30 @@
+name: Cypress E2E Tests Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Permite disparar a pipeline manualmente pelo site do GitHub
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          # Se quiser rodar apenas o spec principal do trabalho, descomente a linha abaixo e ajuste o caminho:
+          # spec: cypress/e2e/seu-arquivo.cy.js
+
+      - name: Upload Mochawesome Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always() # Garante que o relatório será enviado mesmo se algum teste falhar
+        with:
+          name: relatorio-mochawesome
+          path: cypress/reports/
+          retention-days: 30
